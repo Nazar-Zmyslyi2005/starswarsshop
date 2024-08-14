@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useContext} from 'react';
+import { useContext, useState } from 'react';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -13,35 +13,46 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ToggleColorMode from '../ModeToggle';
 import lightLogo from '@/assets/logo-light-theme.png';
 import darkLogo from '@/assets/logo-dark-theme.png';
-import {Context} from "../context/Context.ts";
+import { Context } from "../context/Context.ts";
+import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+import { styled } from '@mui/system';
 
 export const Header = () => {
     const context = useContext(Context);
-    const [open, setOpen] = React.useState(false);
+    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [signInOpen, setSignInOpen] = useState(false);
+    const [signUpOpen, setSignUpOpen] = useState(false);
     const logo = context.mode === 'light' ? lightLogo : darkLogo;
 
-    const toggleDrawer = (newOpen: boolean) => () => {
-        setOpen(newOpen);
+    const toggleDrawer = (newOpen) => () => {
+        setDrawerOpen(newOpen);
     };
 
     const toggleColorMode = () => {
         context.mode = context.mode === 'light' ? 'dark' : "light";
-        setOpen(prevState => prevState);
+        setDrawerOpen(prevState => prevState);
     };
 
-    const scrollToSection = (sectionId: string) => {
+    const scrollToSection = (sectionId) => {
         const sectionElement = document.getElementById(sectionId);
         const offset = 128;
         if (sectionElement) {
             const targetScroll = sectionElement.offsetTop - offset;
-            sectionElement.scrollIntoView({behavior: 'smooth'});
+            sectionElement.scrollIntoView({ behavior: 'smooth' });
             window.scrollTo({
                 top: targetScroll,
                 behavior: 'smooth',
             });
-            setOpen(false);
+            setDrawerOpen(false);
         }
     };
+
+    const handleOpenSignIn = () => setSignInOpen(true);
+    const handleCloseSignIn = () => setSignInOpen(false);
+
+    const handleOpenSignUp = () => setSignUpOpen(true);
+    const handleCloseSignUp = () => setSignUpOpen(false);
 
     return (
         <div>
@@ -54,7 +65,6 @@ export const Header = () => {
                     mt: 2,
                 }}
             >
-
                 <Container maxWidth="100">
                     <Toolbar
                         variant="regular"
@@ -92,10 +102,10 @@ export const Header = () => {
                                 style={logoStyle}
                                 alt="logo"
                             />
-                            <Box sx={{display: {xs: 'none', md: 'flex'}}}>
+                            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                                 <MenuItem
                                     onClick={() => scrollToSection('lego')}
-                                    sx={{py: '6px', px: '12px'}}
+                                    sx={{ py: '6px', px: '12px' }}
                                 >
                                     <Typography variant="body2" color="text.primary">
                                         Lego
@@ -103,7 +113,7 @@ export const Header = () => {
                                 </MenuItem>
                                 <MenuItem
                                     onClick={() => scrollToSection('figure')}
-                                    sx={{py: '6px', px: '12px'}}
+                                    sx={{ py: '6px', px: '12px' }}
                                 >
                                     <Typography variant="body2" color="text.primary">
                                         Figure
@@ -111,7 +121,7 @@ export const Header = () => {
                                 </MenuItem>
                                 <MenuItem
                                     onClick={() => scrollToSection('clothing')}
-                                    sx={{py: '6px', px: '12px'}}
+                                    sx={{ py: '6px', px: '12px' }}
                                 >
                                     <Typography variant="body2" color="text.primary">
                                         Clothing
@@ -119,7 +129,7 @@ export const Header = () => {
                                 </MenuItem>
                                 <MenuItem
                                     onClick={() => scrollToSection('toys & plush shop')}
-                                    sx={{py: '6px', px: '12px'}}
+                                    sx={{ py: '6px', px: '12px' }}
                                 >
                                     <Typography variant="body2" color="text.primary">
                                         Toys & Plush shop
@@ -127,7 +137,7 @@ export const Header = () => {
                                 </MenuItem>
                                 <MenuItem
                                     onClick={() => scrollToSection('accessories')}
-                                    sx={{py: '6px', px: '12px'}}
+                                    sx={{ py: '6px', px: '12px' }}
                                 >
                                     <Typography variant="body2" color="text.primary">
                                         Accessories
@@ -137,19 +147,17 @@ export const Header = () => {
                         </Box>
                         <Box
                             sx={{
-                                display: {xs: 'none', md: 'flex'},
+                                display: { xs: 'none', md: 'flex' },
                                 gap: 0.5,
                                 alignItems: 'center',
                             }}
                         >
-                            <ToggleColorMode mode={context.mode} toggleColorMode={toggleColorMode}/>
+                            <ToggleColorMode mode={context.mode} toggleColorMode={toggleColorMode} />
                             <Button
                                 color="primary"
                                 variant="text"
                                 size="small"
-                                component="a"
-                                href="/material-ui/getting-started/templates/sign-in/"
-                                target="_blank"
+                                onClick={handleOpenSignIn}
                             >
                                 Sign in
                             </Button>
@@ -157,24 +165,22 @@ export const Header = () => {
                                 color="primary"
                                 variant="contained"
                                 size="small"
-                                component="a"
-                                href="/material-ui/getting-started/templates/sign-up/"
-                                target="_blank"
+                                onClick={handleOpenSignUp}
                             >
                                 Sign up
                             </Button>
                         </Box>
-                        <Box sx={{display: {sm: 'block', md: 'none'}}}>
+                        <Box sx={{ display: { sm: 'block', md: 'none' } }}>
                             <Button
                                 variant="text"
                                 color="primary"
                                 aria-label="menu"
                                 onClick={toggleDrawer(true)}
-                                sx={{minWidth: '30px', p: '4px'}}
+                                sx={{ minWidth: '30px', p: '4px' }}
                             >
-                                <MenuIcon/>
+                                <MenuIcon />
                             </Button>
-                            <Drawer anchor="right" open={open} onClose={toggleDrawer(false)}>
+                            <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
                                 <Box
                                     sx={{
                                         minWidth: '60dvw',
@@ -191,7 +197,7 @@ export const Header = () => {
                                             flexGrow: 1,
                                         }}
                                     >
-                                        <ToggleColorMode mode={context.mode} toggleColorMode={toggleColorMode}/>
+                                        <ToggleColorMode mode={context.mode} toggleColorMode={toggleColorMode} />
                                     </Box>
                                     <MenuItem onClick={() => scrollToSection('lego')}>
                                         Lego
@@ -208,15 +214,14 @@ export const Header = () => {
                                     <MenuItem onClick={() => scrollToSection('accessories')}>
                                         Accessories
                                     </MenuItem>
-                                    <Divider/>
+                                    <Divider />
                                     <MenuItem>
                                         <Button
                                             color="primary"
                                             variant="contained"
                                             component="a"
-                                            href="/material-ui/getting-started/templates/sign-up/"
-                                            target="_blank"
                                             fullWidth
+                                            onClick={handleOpenSignUp}
                                         >
                                             Sign up
                                         </Button>
@@ -226,9 +231,8 @@ export const Header = () => {
                                             color="primary"
                                             variant="text"
                                             component="a"
-                                            href="/material-ui/getting-started/templates/sign-in/"
-                                            target="_blank"
                                             fullWidth
+                                            onClick={handleOpenSignIn}
                                         >
                                             Sign in
                                         </Button>
@@ -239,12 +243,85 @@ export const Header = () => {
                     </Toolbar>
                 </Container>
             </AppBar>
+
+            <Modal open={signInOpen} onClose={handleCloseSignIn}>
+                <StyledBox>
+                    <Typography variant="h6" component="h2">
+                        Sign In
+                    </Typography>
+                    <TextField
+                        label="Email or Phone"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                    />
+                    <TextField
+                        label="Password"
+                        variant="outlined"
+                        type="password"
+                        fullWidth
+                        margin="normal"
+                    />
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        sx={{ mt: 2 }}
+                        onClick={handleCloseSignIn}
+                    >
+                        Sign In
+                    </Button>
+                </StyledBox>
+            </Modal>
+
+            <Modal open={signUpOpen} onClose={handleCloseSignUp}>
+                <StyledBox>
+                    <Typography variant="h6" component="h2">
+                        Sign Up
+                    </Typography>
+                    <TextField
+                        label="Email or Phone"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                    />
+                    <TextField
+                        label="Password"
+                        variant="outlined"
+                        type="password"
+                        fullWidth
+                        margin="normal"
+                    />
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        sx={{ mt: 2 }}
+                        onClick={handleCloseSignUp}
+                    >
+                        Sign Up
+                    </Button>
+                </StyledBox>
+            </Modal>
         </div>
     );
-}
+};
 
 const logoStyle = {
-    width: '105px',
-    height: 'auto',
-    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    marginRight: '32px',
+    maxHeight: '32px',
 };
+
+const StyledBox = styled(Box)`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background-color: white;
+    border: 2px solid #000;
+    padding: 16px;
+    border-radius: 8px;
+`;
